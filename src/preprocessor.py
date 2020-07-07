@@ -1,84 +1,70 @@
+import argparse
+import os
 from nltk import word_tokenize, RegexpTokenizer
 import pandas as pd
 import re
-from tqdm import tqdm_notebook as tqdm
-import string
-from collections import Counter
-import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.feature_extraction.text import TfidfVectorizer
-from collections import Counter
-import pickle
-import seaborn as sns
-import matplotlib.pyplot as plt
-from numpy import array
-import numpy as np
-import csv
 
+os.makedirs('./stance/output/')
+os.makedirs('./tfidf/output/')
+
+def pre_process(path):
+    # preprocessing
+    df = pd.read_csv(path, '\t', encoding='mac_roman')
+    tokenizer = RegexpTokenizer(r'\w+')
+    pattern = '[^A-Za-z]+'
+    pd_list = df['Tweet'].apply(lambda x: re.sub(pattern, ' ', x))
+    pd_list = pd_list.apply(lambda x: tokenizer.tokenize(x.lower()))
+    stances = df['Stance'].apply(lambda x: tokenizer.tokenize(x.lower()))
+    targets_out = list(set(df['Target']))
+    tweet_stance_out = pd.concat([pd_list, stances], axis=1, sort=False)
+    return targets_out, tweet_stance_out, df
+
+
+def feature_eng(df_target, out_path):
+    # Feature Engineering
+    print(out_path)
+    vectorizer = CountVectorizer()
+    bow = list()
+    tweet_list = [' '.join(x) for x in df_target['Tweet']]
+    for tweet in tweet_list:
+        tweet_set = set(tweet.split(" "))
+        bow.append(tweet_set)
+        vocabulary = [item for tweet_set in bow for item in tweet_set]
+    numOfWords = dict.fromkeys(vocabulary, 0)
+    for word in vocabulary:
+        numOfWords[word] += 1
+    dic = set(vocabulary)
+
+    TfidfTransformer(smooth_idf=True, use_idf=True)
+    stance = df_target['Stance']
+    # Tf-IDF
+    word_count_vector = vectorizer.fit_transform(tweet_list)
+    feature_names = vectorizer.get_feature_names()
+    data_frame = pd.DataFrame(word_count_vector.T.todense(), index=feature_names)
+    transposed_cv = data_frame.transpose()
+    tfidf = transposed_cv.to_csv('tfidf/'+out_path, sep='\t', encoding='utf-8')
+    stance = stance.to_csv('stance/'+out_path, sep='\t', encoding='utf-8')
+    return tfidf, stance
 
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--emb_dim', type=int, default=10)
-    parser.add_argument('--in_path', type=str, default='./semeval2016-task6-trainingdata.txt')
-    parser.add_argument('--out_path', type=str, default='./')
+    parser.add_argument('--in_path', type=str, default='data/semeval2016-task6-trainingdata.txt')
+    parser.add_argument('--out_path', type=str, default='output/')
     args = parser.parse_args()
     return args
 
-if _name_ == "_main_":
+
+if __name__ == '__main__':
     args = get_args()
+    print(f'run with params: {args}\n')
+    targets, tweet_stance, df = pre_process(args.in_path)
 
-    #preprocessing
-    path = args.emb_dim
-    df = pd.read_csv(path, '\t', encoding='mac_roman')
-    pd_list=df[['Tweet','Stance']].values.tolist()
-    tokenizer=RegexpTokenizer(r'\w+')
-    pattern = '[^A-Za-z]+'
-    pd_list=df['Tweet'].apply(lambda x: re.sub(pattern, ' ', x))
-    pd_list=pd_list.apply(lambda x: tokenizer.tokenize(x.lower()))
-    stances=df['Stance'].apply(lambda x: tokenizer.tokenize(x.lower()))
-    targets=list(set(df['Target']))
-    tweet_stance=pd.concat([pd_list,stances], axis=1, sort=False)
-
-    search="Climate Change is a Real Concern"
     for target in targets:
-      target = df['Target'] == search
-      df_target=tweet_stance[target]
-    print(df_target)
-
-
-    #Feature Engineering
-    tweet_list=[]
-    bow = list()
-    word=list()
-    tweet_list = [' '.join(x) for x in df_target['Tweet']]
-    for tweet in tweet_list:
-      tweet_set=set(tweet.split(" "))
-      bow.append(tweet_set)
-      vocabulary = [item for tweet_set in bow for item in tweet_set]
-    numOfWords = dict.fromkeys(vocabulary, 0)
-    for word in vocabulary:
-        numOfWords[word] += 1
-    bow=vocabulary
-    dic=set(vocabulary)
-    dict_list=list(dic)
-
-    vectorizer = CountVectorizer()
-    tf_idf_transformer=TfidfTransformer(smooth_idf=True,use_idf=True)
-    stance=df_target['Stance']
-
-    #Bag Of Words
-    bag_of_words=vectorizer.fit_transform(tweet_list).toarray()
-
-    #Tf-IDF
-    word_count_vector=vectorizer.fit_transform(tweet_list)
-    feature_names = vectorizer.get_feature_names()
-    data_frame = pd.DataFrame(word_count_vector.T.todense(), index=feature_names)
-    transposed_cv=data_frame.transpose()
-    transposed_cv.to_csv(args.outpath+'climate_tfidf.tsv', sep='\t', encoding='utf-8')
-    stance.to_csv(args.outpath+'climate_stance.tsv', sep='\t', encoding='utf-8')
-
-
-
-
+        target_bool = df['Target'] == target
+        df_target_ = tweet_stance[target_bool]
+        out_path_ = args.out_path+target+'.tsv'
+        print(out_path_)
+        tfidf, stance = feature_eng(df_target=df_target_, out_path=out_path_)
