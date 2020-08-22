@@ -27,7 +27,7 @@ class Logisticregression:
         self.cm = self.confusion_matrix(self.y_test, self.y_pred)
         self.p_r_f = self.precison_recall_f1(self.y_test, self.y_pred)
         self.test_train_split(self.tfidf, self.stance)
-       # self.save(filename, self.logmodel)
+        self.save(filename, self.logmodel)
 
 
     def read_tfidf(self, path):
@@ -35,7 +35,11 @@ class Logisticregression:
 
 
     def read_stance(self, path):
-        return pd.read_csv(path, encoding="utf-8")
+        stance_df = pd.read_csv(path, sep="\t", encoding="utf-8")
+        # print(stance_df.columns)
+        stance_df = stance_df.drop(columns=['Unnamed: 0'])
+        # print(stance_df.columns)
+        return stance_df
 
 
     def test_train_split(self, tfidf, stance):
@@ -84,23 +88,28 @@ def get_args():
 
 if __name__ == "__main__":
     args = get_args()
-    print(args)
     if args.model == "lg":
-        seeds = [1, 49, 999, 5555, 54321, 987654, 1000000, 12345678, 987654321, 1234567890]
-        for seed in seeds:
-            np.random.seed(seed)
-            model = Logisticregression(tfidf_path=args.tfidf_file, stance_path=args.stance, multiclass=args.multiclass,
-                                   penalty=args.penalty, solver=args.solver, c_value=args.c, max_itr=args.max_itr,
-                                 filename=args.filename)
-            # print(model.tfidf.shape)
-            # print(model.tfidf)
-            # print(model.y_train)
-            # print(model.y_test)
-            # print(model.training_accuracy)
-            print(model.testing_accuracy)
-            print(seed)
-            print(model.cm)
-            print(model.p_r_f)
+        seeds = 0;
+        if args.tfidf_file == "F:/NLP/Project/Introduction_NLP/output/Atheism_tfidf.tsv":
+            seeds = 1000000
+        elif args.tfidf_file == "F:/NLP/Project/Introduction_NLP/output/ClimateChangeisaRealConcern_tfidf.tsv":
+            seeds = 1
+        elif args.tfidf_file == "F:/NLP/Project/Introduction_NLP/output/FeministMovement_tfidf.tsv":
+            seeds = 5555
+        elif args.tfidf_file == "F:/NLP/Project/Introduction_NLP/output/HillaryClinton_tfidf.tsv":
+            seeds = 987654321
+        elif args.tfidf_file == "F:/NLP/Project/Introduction_NLP/output/LegalizationofAbortion_tfidf.tsv":
+            seeds = 987654321
+        #seeds = [1, 49, 999, 5555, 54321, 987654, 1000000, 12345678, 987654321, 1234567890]
+        np.random.seed(seeds)
+        model = Logisticregression(tfidf_path=args.tfidf_file, stance_path=args.stance, multiclass=args.multiclass,
+                                       penalty=args.penalty, solver=args.solver, c_value=args.c, max_itr=args.max_itr,
+                                     filename=args.filename)
+        # print(model.training_accuracy)
+        print(model.testing_accuracy)
+        print(seeds)
+        print(model.cm)
+        print(model.p_r_f)
 
     else:
         print("not implemented...", flush=True)

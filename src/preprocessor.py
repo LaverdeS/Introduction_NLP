@@ -7,6 +7,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
+import nltk
+
+nltk.download('stopwords')
 
 porter = PorterStemmer()
 
@@ -92,8 +95,8 @@ def feature_eng(df, remove_stopwords, stem, out_path):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--in_path', type=str, default='C:/Users/lavml/Documents/GitHub/Introduction_NLP/data/train_data_A.txt')
-    parser.add_argument('--out_path', type=str, default='C:/Users/lavml/Documents/GitHub/Introduction_NLP/output/')
+    parser.add_argument('--in_path', type=str, default='F:/NLP/Project/Introduction_NLP/data/train_data_A.txt')
+    parser.add_argument('--out_path', type=str, default='F:/NLP/Project/Introduction_NLP/output/')
     parser.add_argument('--remove_numbers', type=str, default='True')
     parser.add_argument('--remove_special_characters', type=str, default='True')
     parser.add_argument('--remove_stopwords', type=str, default='True')
