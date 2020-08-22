@@ -1,0 +1,2 @@
+python preprocessor.py --in_path C:/Users/lavml/Documents/GitHub/Introduction_NLP/data/train_data_A.txt --out_path C:/Users/lavml/Documents/GitHub/Introduction_NLP/output/ --remove_numbers True --remove_special_characters True --remove_stopwords True --stem True
+python models.py --model lg --tfidf_file C:/Users/lavml/Documents/GitHub/Introduction_NLP/output/Atheism_tfidf.tsv --stance C:/Users/lavml/Documents/GitHub/Introduction_NLP/output/Atheism_stance.tsv --filename C:/Users/lavml/Documents/GitHub/Introduction_NLP/output/atheism_LR_1.sav')
