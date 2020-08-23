@@ -10,15 +10,10 @@ from nltk.stem import PorterStemmer
 
 porter = PorterStemmer()
 
-if not os.path.exists(os.path.dirname('./stance/output/')):
-    os.makedirs('./stance/output/')
-if not os.path.exists(os.path.dirname('./tfidf/output/')):
-    os.makedirs('./tfidf/output/')
 
-
-def pre_process(in_path, remove_numbers, remove_special_characters,  remove_stopwords, stem):
+def pre_process(in_path, remove_numbers, remove_special_characters, remove_stopwords, stem):
     df = pd.read_csv(in_path, '\t', encoding='mac_roman')
-    args_list = [remove_numbers, remove_special_characters,  remove_stopwords, stem]
+    args_list = [remove_numbers, remove_special_characters, remove_stopwords, stem]
     print(args_list)
 
     if remove_numbers == 'True':
@@ -50,10 +45,13 @@ def pre_process(in_path, remove_numbers, remove_special_characters,  remove_stop
             df['Tweet'][idx] = list(filter(None, tweet))
         print(df.head(3))
     else:
-        print('not removing stopwords because it is set to False or Remove special characters is set to False' + remove_stopwords)
+        print(
+            'not removing stopwords because it is set to False or Remove special characters is set to False' + remove_stopwords)
 
     if stem == 'True':
         print('\nstemming...')
+        if remove_stopwords != 'True':
+            df['Tweet'] = [word_tokenize(str(tweet)) for tweet in df['Tweet']]
         for tweet in df['Tweet']:
             for ix, w in enumerate(tweet):
                 tweet[ix] = porter.stem(w)
@@ -83,8 +81,8 @@ def feature_eng(df, remove_stopwords, stem, out_path):
     feature_names = vectorizer.get_feature_names()
     data_frame = pd.DataFrame(word_count_vector.T.todense(), index=feature_names)
     transposed_cv = data_frame.transpose()
-    tfidf = transposed_cv.to_csv('tfidf/' + out_path, sep='\t', encoding='utf-8')
-    stance = stance.to_csv('stance/' + out_path, sep='\t', encoding='utf-8')
+    tfidf = transposed_cv.to_csv(out_path + "_tfidf", sep='\t', encoding='utf-8')
+    stance = stance.to_csv(out_path + "_stance", sep='\t', encoding='utf-8')
     return tfidf, stance
 
 
@@ -109,6 +107,6 @@ if __name__ == '__main__':
     for target in targets:
         target_bool = df['Target'] == target
         df_ = tweet_stance[target_bool]
-        out_path_ = args.out_path + target + '.tsv'
+        out_path_ = args.out_path + target.replace(" ", "") + '.tsv'
         print(out_path_)
         tfidf, stance = feature_eng(df=df_, remove_stopwords=args.remove_stopwords, stem=args.stem, out_path=out_path_)
