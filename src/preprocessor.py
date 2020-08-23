@@ -7,9 +7,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-import nltk
-
-nltk.download('stopwords')
 
 porter = PorterStemmer()
 
@@ -44,8 +41,8 @@ def pre_process(in_path, remove_numbers, remove_special_characters,  remove_stop
     if remove_stopwords == 'True':
         print('removing stopwords')
         stop_words = set(stopwords.words('english'))
-        df['Tweet'] = [sent_tokenize(str(tweet)) for tweet in df['Tweet']]
-        print(df.head(3))
+        if remove_special_characters and remove_numbers != 'True':
+            df['Tweet'] = [word_tokenize(str(tweet)) for tweet in df['Tweet']]
 
         for idx, tweet in df['Tweet'].items():
             for ix, w in enumerate(tweet):
@@ -53,16 +50,16 @@ def pre_process(in_path, remove_numbers, remove_special_characters,  remove_stop
             df['Tweet'][idx] = list(filter(None, tweet))
         print(df.head(3))
     else:
-        print('not removing stopwords because it is set to False or Remove specil characters is set to False' + remove_stopwords)
+        print('not removing stopwords because it is set to False or Remove special characters is set to False' + remove_stopwords)
 
-    if stem and remove_special_characters == 'True':
+    if stem == 'True':
         print('\nstemming...')
         for tweet in df['Tweet']:
             for ix, w in enumerate(tweet):
                 tweet[ix] = porter.stem(w)
         print(df.head(3))
     else:
-        print('not stemming...')
+        print('not stemming because it is set to False or Remove special characters is set to False')
 
     targets_out = list(set(df['Target']))
     tweet_stance_out = df[["Tweet", "Stance"]]
@@ -73,7 +70,6 @@ def feature_eng(df, remove_stopwords, stem, out_path):
     vectorizer = CountVectorizer()
     bow = list()
     tweet_list = [''.join(x) for x in df['Tweet']]
-    # print(tweet_list)
     for tweet in tweet_list:
         tweet_set = set(tweet.split(" "))
         bow.append(tweet_set)
@@ -87,16 +83,15 @@ def feature_eng(df, remove_stopwords, stem, out_path):
     feature_names = vectorizer.get_feature_names()
     data_frame = pd.DataFrame(word_count_vector.T.todense(), index=feature_names)
     transposed_cv = data_frame.transpose()
-    tfidf = transposed_cv.to_csv(out_path + 'tfidf.tsv', sep='\t', encoding='utf-8')
-    stance = stance.to_csv(out_path + 'stance.tsv', sep='\t', encoding='utf-8')
-    print("saved to the output path...")
+    tfidf = transposed_cv.to_csv('tfidf/' + out_path, sep='\t', encoding='utf-8')
+    stance = stance.to_csv('stance/' + out_path, sep='\t', encoding='utf-8')
     return tfidf, stance
 
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--in_path', type=str, default='F:/NLP/Project/Introduction_NLP/data/train_data_A.txt')
-    parser.add_argument('--out_path', type=str, default='F:/NLP/Project/Introduction_NLP/output/')
+    parser.add_argument('--in_path', type=str, default='data/test.txt')
+    parser.add_argument('--out_path', type=str, default='output/')
     parser.add_argument('--remove_numbers', type=str, default='True')
     parser.add_argument('--remove_special_characters', type=str, default='True')
     parser.add_argument('--remove_stopwords', type=str, default='True')
@@ -114,7 +109,6 @@ if __name__ == '__main__':
     for target in targets:
         target_bool = df['Target'] == target
         df_ = tweet_stance[target_bool]
-        target_str = target.replace(' ', '') + '_'
-        out_path_ = args.out_path + target_str
-        # print(out_path_)
+        out_path_ = args.out_path + target + '.tsv'
+        print(out_path_)
         tfidf, stance = feature_eng(df=df_, remove_stopwords=args.remove_stopwords, stem=args.stem, out_path=out_path_)
