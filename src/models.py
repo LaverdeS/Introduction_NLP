@@ -106,11 +106,19 @@ if __name__ == "__main__":
                                        penalty=args.penalty, solver=args.solver, c_value=args.c, max_itr=args.max_itr,
                                      filename=args.filename)
         # print(model.training_accuracy)
-        print(model.testing_accuracy)
-        print(seeds)
-        print(model.cm)
+        # print(model.testing_accuracy)
+        # print(seeds)
+        # print(model.cm)
         print(model.p_r_f)
 
+        acc_macro = model.p_r_f
+        log_out = {"name": args.filename,
+                   "acc_macro_wavg": acc_macro
+                   }
+        with open("log_out.txt", "a", encoding="utf-8") as file_out:
+            for key, value in log_out.items():
+                file_out.write(key+": " + value + "\n")
+        print("log_out.txt file updated!...\n")
     else:
         print("not implemented...", flush=True)
         # model =
