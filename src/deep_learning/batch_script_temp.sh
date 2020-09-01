@@ -1,0 +1,6 @@
+#!/bin/bash
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,6,7 python fast-bert.py --data_path ./data_split/ --train_file train_atheism.csv --val_file val_atheism.csv --label_path ./ --labels_file labels.csv --output_dir atheism_5_e-2 --num_epochs 5 --lr 1e-2
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,6,7 python fast-bert.py --data_path ./data_split/ --train_file train_atheism.csv --val_file val_atheism.csv --label_path ./ --labels_file labels.csv --output_dir atheism_5_e-3 --num_epochs 5 --lr 1e-3
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,6,7 python fast-bert.py --data_path ./data_split/ --train_file train_atheism.csv --val_file val_atheism.csv --label_path ./ --labels_file labels.csv --output_dir atheism_5_e-4 --num_epochs 5 --lr 1e-4
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,6,7 python fast-bert.py --data_path ./data_split/ --train_file train_atheism.csv --val_file val_atheism.csv --label_path ./ --labels_file labels.csv --output_dir atheism_5_e-5 --num_epochs 5 --lr 1e-5
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,6,7 python fast-bert.py --data_path ./data_split/ --train_file train_atheism.csv --val_file val_atheism.csv --label_path ./ --labels_file labels.csv --output_dir atheism_5_e-6 --num_epochs 5 --lr 1e-6

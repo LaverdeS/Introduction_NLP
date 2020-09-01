@@ -1,0 +1,14 @@
+pytorch
+numpy==1.15
+tensorflow-gpu==2.0.0a0
+tensorboard==2.2.2 # has to be 1.6.0 or less
+pytorch-lamb
+protobuf==3.8.0
+tensorboardX
+fastprogress
+sklearn
+spacy
+transformers==2.5.1
+pandas
+python-box
+tokenizers==0.5.2
