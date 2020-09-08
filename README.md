@@ -17,3 +17,6 @@ Stance Classification in Tweets
 ##### `get_feature_names()` is made `index` of the `DataFrame` <br />
 ##### `todense()` is applied to make the Dataframe dense <br />
 ##### `transpose()` replaces row with columns and columns with rows to have the Bag of Words (BOW) on as `columns` instead of `rows`  <br />
+
+## RESTful-API
+#### To read the documentation and the format of the POST requests, run restapi.py and from URL go to /docs and/or /redoc
