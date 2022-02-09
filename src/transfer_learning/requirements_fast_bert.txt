@@ -1,6 +1,6 @@
 pytorch
 numpy==1.15
-tensorflow-gpu==2.0.0a0
+tensorflow-gpu==2.5.3
 tensorboard==2.2.2 # has to be 1.6.0 or less
 pytorch-lamb
 protobuf==3.8.0
