@@ -3,7 +3,7 @@ numpy==1.15
 tensorflow-gpu==2.0.0a0
 tensorboard==2.2.2 # has to be 1.6.0 or less
 pytorch-lamb
-protobuf==3.8.0
+protobuf==3.18.3
 tensorboardX
 fastprogress
 sklearn
