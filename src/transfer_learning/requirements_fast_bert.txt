@@ -8,7 +8,7 @@ tensorboardX
 fastprogress
 sklearn
 spacy
-transformers==2.5.1
+transformers==4.30.0
 pandas
 python-box
 tokenizers==0.5.2
